@@ -24,8 +24,9 @@ class Hero(Sprite):
 			self.keys['right'] = False
 
 	def update(self, dt):
-		if self.keys['right']:
-			self.x += self.speed * dt
+		# if self.keys['right']:
+		# 	self.x += self.speed * dt
+		pass
 		
 		
 
