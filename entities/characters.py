@@ -1,32 +1,50 @@
-from pyglet.window import key
-from pyglet.sprite import Sprite
+import cocos
+from cocos.director import director
 from loader.animations import nick
+from cocos.sprite import Sprite
+import pyglet
 
-class Hero(Sprite):
-	def __init__(self, *args, **kwargs):
-		self.default = Sprite(nick.get('idle')).image
-		super().__init__(img=self.default, **kwargs)
-		self.walk = Sprite(nick.get('walk'))
-		self.shoot = Sprite(nick.get('shoot'))
-		self.keys = dict(up=False, down=False, right=False, left=False, shoot=False)
-		self.speed = 100
 
-	def on_key_press(self, symbol, modifiers):
+class Character(cocos.layer.Layer):
+    
+    is_event_handler = True
 
-		if symbol == key.RIGHT:
-			self.keys['right'] = True
-			self.image = self.walk.image
-		elif symbol == key.S:
-		    self.image = self.shoot.image
-		    
-	def on_key_release(self, symbol, modifiers):
-			self.image = self.default
-			self.keys['right'] = False
+    def __init__(self):
+        super(Character, self).__init__()
+        self.controls = dict(up=False, down=False, right=False, left=False, shoot=False)
+        x, y = director.get_window_size()
+        
+        self.idle = Sprite(nick.get('idle'))
+        self.walk = Sprite(nick.get("walk"))
+        self.shoot = Sprite(nick.get("shoot"))
+                
+        self.default = Sprite(self.idle.image)
+        self.default.position = x/2, y/2
+        
+        self.add(self.default)
 
-	def update(self, dt):
-		# if self.keys['right']:
-		# 	self.x += self.speed * dt
-		pass
+    def update_anim(self, anim):
+        self.default.image = anim.image
+
+    
+    def on_key_press(self, key, modifiers):
+        if key == pyglet.window.key.RIGHT:
+            self.controls['right'] = True
+            self.update_anim(self.walk)
+        if key == pyglet.window.key.S:
+            self.controls['shoot'] = True
+            self.update_anim(self.shoot)
+            
+        
+
+
+    def on_key_release(self, key, modifiers):
+        if self.controls['right']:
+            self.controls['right'] = False
+        if self.controls['shoot']:
+            self.controls['shoot'] = False
+
+        self.update_anim(self.idle)
 		
 		
 
